@@ -1,7 +1,8 @@
-import { Header } from "./Header";
-import { NewForm } from "./NewForm";
+import Header from "./Header";
+import NewForm from "./NewForm";
 
-export function Feed() {
+
+const Feed = () => {
   return (
     <div className="m-auto ml-52 flex w-full flex-col">
       <Header />
@@ -16,3 +17,5 @@ export function Feed() {
     </div>
   );
 }
+
+export default Feed;

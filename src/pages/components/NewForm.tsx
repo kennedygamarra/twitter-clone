@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-export function NewForm() {
+
+const  NewForm = () => {
   const { data: sessionData } = useSession();
   const imgUrl = sessionData?.user.image;
   return (
@@ -26,3 +27,5 @@ export function NewForm() {
     </form>
   );
 }
+
+export default NewForm;
