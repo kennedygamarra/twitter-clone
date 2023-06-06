@@ -1,7 +1,6 @@
 import { type NextPage } from "next";
-import { api } from "~/utils/api";
-import { Sidebar } from "./components/Sidebar";
-import { Feed } from "./components/Feed";
+import Sidebar from "./components/Sidebar";
+import Feed from "./components/Feed";
 
 const Home: NextPage = () => {
   return (
