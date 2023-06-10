@@ -14,6 +14,7 @@ export const tweetRouter = createTRPCRouter({
       })
     )
     .query(async ({ input: { limit, cursor }, ctx }) => {
+      const currentUserId = ctx.session?.user.id;
       const tweets = await ctx.prisma.tweet.findMany({
         take: limit + 1,
         cursor: cursor ? { id_createdAt: cursor } : undefined,
@@ -25,6 +26,10 @@ export const tweetRouter = createTRPCRouter({
           _count: {
             select: { likes: true },
           },
+          likes:
+            currentUserId == null
+              ? false
+              : { where: { userId: currentUserId } },
           user: {
             select: {
               id: true,
@@ -35,15 +40,24 @@ export const tweetRouter = createTRPCRouter({
         },
       });
 
-      let nextCursor : typeof cursor | undefined
-      if(tweets.length > limit) {
-        nextCursor = tweets.pop()
-        if(nextCursor!=null){
-          nextCursor = {id: nextCursor.id, createdAt: nextCursor.createdAt}
+      let nextCursor: typeof cursor | undefined;
+      if (tweets.length > limit) {
+        nextCursor = tweets.pop();
+        if (nextCursor != null) {
+          nextCursor = { id: nextCursor.id, createdAt: nextCursor.createdAt };
         }
       }
 
-      return {tweets, nextCursor}
+      return {data: tweets.map((tweet)=>{
+        return{
+          id: tweet.id,
+          content: tweet.content,
+          createdAt: tweet.createdAt,
+          likesCount: tweet._count.likes,
+          user: tweet.user,
+          isLikedByMe: tweet.likes?.length > 0,
+        }
+      }) ,nextCursor}
     }),
   create: protectedProcedure
     .input(z.object({ content: z.string() }))
