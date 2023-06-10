@@ -8,7 +8,7 @@ interface Tweet{
   userId: string;
 }
 
-const Tweet = (props :Tweet) => {
+const Tweet = () => {
   const { data: sessionData } = useSession();
   const imgUrl = sessionData?.user.image;
 
@@ -25,8 +25,6 @@ const Tweet = (props :Tweet) => {
           src={imgUrl}
         />
       )}
-      <h1>{props.}</h1>
-      <p>{props.content}</p>
       <button type="submit" className="h-10 w-20 rounded-3xl bg-sky-500 font-semibold">
         Tweet
       </button>
