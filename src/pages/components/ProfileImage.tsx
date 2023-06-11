@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export function ProfileImage({imageUrl}: {imageUrl: string | null}) {
+const ProfileImage = ({imageUrl}: {imageUrl: string | null}) => {
   if (!imageUrl) return null;
 
   return (
@@ -13,3 +13,5 @@ export function ProfileImage({imageUrl}: {imageUrl: string | null}) {
     />
   );
 }
+
+export default ProfileImage;

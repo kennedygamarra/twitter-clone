@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { api } from "~/utils/api";
-import { ProfileImage } from "./ProfileImage";
+import ProfileImage from "./ProfileImage";
 
 
 const NewForm = () => {

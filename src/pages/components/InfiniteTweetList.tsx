@@ -1,5 +1,5 @@
 import InfiniteScroll from "react-infinite-scroll-component";
-import { ProfileImage } from "./ProfileImage";
+import ProfileImage from "./ProfileImage";
 import Link from "next/link";
 
 type Tweet = {
@@ -23,13 +23,13 @@ type InfiniteTweetListProps = {
   hasMore: boolean | undefined;
 };
 
-export function InfiniteTweetList({
+const InfiniteTweetList = ({
   tweets,
   isLoading,
   isError,
   hasMore,
   fetchNewTweets,
-}: InfiniteTweetListProps) {
+}: InfiniteTweetListProps) => {
   if (isLoading) return <h1>Loading...</h1>;
   if (isError) return <h1>Error</h1>;
   if (tweets == null || tweets.length === 0) return <h1>No tweets</h1>;
@@ -76,3 +76,5 @@ function TweetPost({
     </div>
   );
 }
+
+export default InfiniteTweetList;

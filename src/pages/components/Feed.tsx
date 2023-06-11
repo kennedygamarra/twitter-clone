@@ -1,7 +1,7 @@
 import { api } from "~/utils/api";
 import Header from "./Header";
 import NewForm from "./NewForm";
-import { InfiniteTweetList } from "./InfiniteTweetList";
+import InfiniteTweetList from "./InfiniteTweetList";
 
 const Feed = () => {
   return (
