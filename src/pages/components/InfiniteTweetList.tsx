@@ -1,5 +1,6 @@
 import InfiniteScroll from "react-infinite-scroll-component";
-import Image from "next/image";
+import { ProfileImage } from "./ProfileImage";
+import Link from "next/link";
 
 type Tweet = {
   id: string;
@@ -49,29 +50,25 @@ export function InfiniteTweetList({
   );
 }
 
+const dateFormatter = new Intl.DateTimeFormat(undefined, {dateStyle:"short"})
+
 function TweetPost({
   user,
   content,
   createdAt,
-  likesCount,
-  isLikedByMe,
+  // likesCount,
+  // isLikedByMe,
 }: Tweet) {
   return (
     <div className="p-4 border-b border-white/10">
       <div className="m-auto flex flex-row px-2 gap-4">
-        {user.image && (
-          <Image
-            className="h-14 w-14 rounded-full"
-            width={100}
-            height={100}
-            alt={user.name || "user image"}
-            src={user.image}
-          />
-        )}
+        <Link href={`/profiles/${user.id}`}>
+          <ProfileImage imageUrl={user.image}/>
+        </Link>
         <div className="flex flex-col">
           <div className="flex flex-row gap-4">
             <h1 className="font-semibold">{user.name}</h1>
-            <p className="font-light text-white/40">10h</p>
+            <p className="font-light text-white/40">{dateFormatter.format(createdAt)}</p>
           </div>
           <p className="font-light">{content}</p>
         </div>

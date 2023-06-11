@@ -1,7 +1,6 @@
 import { api } from "~/utils/api";
 import Header from "./Header";
 import NewForm from "./NewForm";
-import { useEffect } from "react";
 import { InfiniteTweetList } from "./InfiniteTweetList";
 
 const Feed = () => {
