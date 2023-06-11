@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
-import Image from "next/image";
 import { useState } from "react";
 import { api } from "~/utils/api";
+import ProfileImage from "./ProfileImage";
 
 
 const NewForm = () => {
@@ -31,15 +31,7 @@ const NewForm = () => {
       action=""
       className="flex w-full flex-row items-center gap-2 border-b border-white/10  px-4"
     >
-      {imgUrl && (
-        <Image
-          className="h-14 w-14 rounded-full"
-          width={100}
-          height={100}
-          alt="user image"
-          src={imgUrl}
-        />
-      )}
+      <ProfileImage imageUrl={imgUrl || null} />
       <textarea
         name="title"
         id="title"
@@ -48,7 +40,10 @@ const NewForm = () => {
         className="h-auto w-auto resize-none overflow-hidden bg-inherit px-4 py-2 outline-none"
         placeholder="What's happening?!"
       />
-      <button type="submit" className="h-10 w-20 rounded-3xl bg-sky-500 font-semibold">
+      <button
+        type="submit"
+        className="h-10 w-20 rounded-3xl bg-sky-500 font-semibold"
+      >
         Tweet
       </button>
     </form>
