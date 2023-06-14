@@ -48,16 +48,19 @@ export const tweetRouter = createTRPCRouter({
         }
       }
 
-      return {data: tweets.map((tweet)=>{
-        return{
-          id: tweet.id,
-          content: tweet.content,
-          createdAt: tweet.createdAt,
-          likesCount: tweet._count.likes,
-          user: tweet.user,
-          isLikedByMe: tweet.likes?.length > 0,
-        }
-      }) ,nextCursor}
+      return {
+        data: tweets.map((tweet) => {
+          return {
+            id: tweet.id,
+            content: tweet.content,
+            createdAt: tweet.createdAt,
+            likesCount: tweet._count.likes,
+            user: tweet.user,
+            isLikedByMe: tweet.likes?.length > 0,
+          };
+        }),
+        nextCursor,
+      };
     }),
   create: protectedProcedure
     .input(z.object({ content: z.string() }))
@@ -68,5 +71,33 @@ export const tweetRouter = createTRPCRouter({
           userId: ctx.session.user.id,
         },
       });
+    }),
+  like: protectedProcedure
+    .input(z.object({ tweetId: z.string() }))
+    .mutation(async ({ input: { tweetId }, ctx }) => {
+      const data = {
+        tweetId: tweetId,
+        userId: ctx.session.user.id,
+      };
+
+      const isLiked = await ctx.prisma.like.findUnique({
+        where: {
+          userId_tweetId: data,
+        },
+      });
+
+      if (isLiked == null) {
+        await ctx.prisma.like.create({
+          data,
+        });
+        return { addedLike: true };
+      } else {
+        await ctx.prisma.like.delete({
+          where: {
+            userId_tweetId: data,
+          },
+        });
+        return { addedLike: false };
+      }
     }),
 });
