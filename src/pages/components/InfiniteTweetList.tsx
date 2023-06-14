@@ -3,6 +3,7 @@ import ProfileImage from "./ProfileImage";
 import Link from "next/link";
 import { VscHeartFilled, VscHeart } from "react-icons/vsc";
 import { useSession } from "next-auth/react";
+import { api } from "~/utils/api";
 
 type Tweet = {
   id: string;
@@ -57,12 +58,21 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 });
 
 function TweetPost({
+  id,
   user,
   content,
   createdAt,
   likesCount,
   isLikedByMe,
 }: Tweet) {
+
+  
+  const toggleLike = api.tweet.like.useMutation();
+
+  function handleToggleLike(){
+    toggleLike.mutate({tweetId: id});
+  }
+
   return (
     <div className="border-b border-white/10 p-4">
       <header className="m-auto flex flex-row gap-4 px-2">
@@ -80,35 +90,56 @@ function TweetPost({
         </div>
       </header>
       <footer className="text-center align-middle items-center">
-        <LikeButton isLikedByMe={isLikedByMe} likesCount={likesCount} />
+        <LikeButton onClick={handleToggleLike} isLoading={toggleLike.isLoading} isLikedByMe={isLikedByMe} likesCount={likesCount} />
       </footer>
     </div>
   );
 }
 
 type LikeButtonProps = {
+  onClick: () => void;
+  isLoading: boolean;
   isLikedByMe: boolean;
   likesCount: number;
 };
 
-function LikeButton({ isLikedByMe, likesCount }: LikeButtonProps) {
+function LikeButton({
+  onClick,
+  isLoading,
+  isLikedByMe,
+  likesCount,
+}: LikeButtonProps) {
   const session = useSession();
   const HeartIcon = isLikedByMe ? VscHeartFilled : VscHeart;
 
-    if (session.status !== "authenticated") {
-      return (
-        <button className="group flex flex-row gap-2">
-          <HeartIcon/>
-          <span>{likesCount}</span>
-        </button>
-      )
-    }
+  if (session.status !== "authenticated") {
     return (
-      <button className={`group flex flex-row gap-2 transition-colors ${isLikedByMe ? "text-pink-600" : "text-gray-600 hover:text-pink-600 focus-visible:text-pink-600"}`}>
-          <HeartIcon className={`transition-colors duration-200 ${isLikedByMe ? "fill-pink-600" : "fill-gray-600 group-hover:fill-pink-600 group-focus-visible:fill-pink-600"}`}/>
-          <span>{likesCount}</span>
+      <button className="group flex flex-row gap-2">
+        <HeartIcon />
+        <span>{likesCount}</span>
       </button>
-    )
+    );
+  }
+  return (
+    <button
+      onClick={onClick}
+      disabled={isLoading}
+      className={`group flex flex-row gap-2 transition-colors ${
+        isLikedByMe
+          ? "text-pink-600"
+          : "text-gray-600 hover:text-pink-600 focus-visible:text-pink-600"
+      }`}
+    >
+      <HeartIcon
+        className={`transition-colors duration-200 ${
+          isLikedByMe
+            ? "fill-pink-600"
+            : "fill-gray-600 group-hover:fill-pink-600 group-focus-visible:fill-pink-600"
+        }`}
+      />
+      <span>{likesCount}</span>
+    </button>
+  );
 }
 
 export default InfiniteTweetList;
