@@ -65,12 +65,46 @@ function TweetPost({
   likesCount,
   isLikedByMe,
 }: Tweet) {
+  const utils = api.useContext();
 
-  
-  const toggleLike = api.tweet.like.useMutation();
+  const toggleLike = api.tweet.like.useMutation({
+    // Use "optimistic updates" to update the UI immediately
+    onSuccess: ({ addedLike }) => {
+      const updateData: Parameters<
+        typeof utils.tweet.getFeed.setInfiniteData
+      >[1] = (oldData) => {
+        console.log({ oldData });
 
-  function handleToggleLike(){
-    toggleLike.mutate({tweetId: id});
+        if (oldData == null) return;
+
+        const likesCount = addedLike ? 1 : -1;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => {
+            return {
+              ...page,
+              data: page.data.map((tweet) => {
+                if (id == tweet.id) {
+                  return {
+                    ...tweet,
+                    likesCount: tweet.likesCount + likesCount,
+                    isLikedByMe: addedLike,
+                  };
+                }
+                return tweet;
+              }),
+            };
+          }),
+        };
+      };
+
+      utils.tweet.getFeed.setInfiniteData({}, updateData);
+    },
+  });
+
+  function handleToggleLike() {
+    toggleLike.mutate({ tweetId: id });
   }
 
   return (
@@ -89,8 +123,13 @@ function TweetPost({
           <p className="font-light">{content}</p>
         </div>
       </header>
-      <footer className="text-center align-middle items-center">
-        <LikeButton onClick={handleToggleLike} isLoading={toggleLike.isLoading} isLikedByMe={isLikedByMe} likesCount={likesCount} />
+      <footer className="items-center text-center align-middle">
+        <LikeButton
+          onClick={handleToggleLike}
+          isLoading={toggleLike.isLoading}
+          isLikedByMe={isLikedByMe}
+          likesCount={likesCount}
+        />
       </footer>
     </div>
   );
