@@ -3,18 +3,45 @@ import { useState } from "react";
 import { api } from "~/utils/api";
 import ProfileImage from "./ProfileImage";
 
-
 const NewForm = () => {
   const { data: sessionData, status } = useSession();
-  
+
   const [tweet, setTweet] = useState("");
 
+  const utils = api.useContext();
+
   const newTweet = api.tweet.create.useMutation({
-    onSuccess: (tweet) => {
-      console.log(tweet);
+    onSuccess: (newTweet) => {
       setTweet("");
-    }
-  })
+      if (status != "authenticated") return;
+
+      utils.tweet.getFeed.setInfiniteData({}, (oldData) => {
+        if (oldData == null || oldData.pages[0] == null) return;
+
+        const newTweetCache = {
+          ...newTweet,
+          isLikedByMe: false,
+          likesCount: 0,
+          user: {
+            id: sessionData.user.id,
+            name: sessionData.user.name,
+            image: sessionData.user.image,
+          },
+        };
+
+        return {
+          ...oldData,
+          pages: [
+            {
+              ...oldData.pages[0],
+              tweets: [newTweetCache, ...oldData.pages[0].data],
+            },
+            ...oldData.pages.slice(1),
+          ],
+        };
+      });
+    },
+  });
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,7 +49,6 @@ const NewForm = () => {
   }
 
   if (status !== "authenticated") return null;
-
 
   const imgUrl = sessionData?.user.image;
   return (
