@@ -13,7 +13,7 @@ const NewForm = () => {
   const newTweet = api.tweet.create.useMutation({
     onSuccess: (newTweet) => {
       setTweet("");
-      if (status != "authenticated") return;
+      if (status !== "authenticated") return;
 
       utils.tweet.getFeed.setInfiniteData({}, (oldData) => {
         if (oldData == null || oldData.pages[0] == null) return;
