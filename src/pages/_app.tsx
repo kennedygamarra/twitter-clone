@@ -7,7 +7,7 @@ import Head from "next/head";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
-  pageProps: { session, ...pageProps },
+  pageProps: { session },
 }) => {
   return (
     <SessionProvider session={session}>
